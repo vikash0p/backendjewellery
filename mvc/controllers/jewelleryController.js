@@ -25,14 +25,31 @@ export const getJewelleryById = async (req, res) => {
         res.status(500).json({ message: error.message });
 
     }
-   
+
 };
 
 // Get all jewellery items
 export const getAllJewellery = async (req, res) => {
     try {
-        const jewelleryList = await Jewellery.find();
-        res.json(jewelleryList);
+        let page = parseInt(req.query.page) || 1;
+        let limit = parseInt(req.query.limit) || 12;
+        let skip = (page - 1) * limit;
+
+        // Apply pagination with skip and limit
+        const jewelleryList = await Jewellery.find().skip(skip).limit(limit);
+
+        // Get the total number of items for calculating total pages
+        const totalItems = await Jewellery.countDocuments();
+        const totalPages = Math.ceil(totalItems / limit);
+
+        res.json({
+            jewelleryList,
+            page,
+            totalPages,
+            totalItems,
+            hasNextPage: page < totalPages,
+            hasPreviousPage: page > 1,
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
