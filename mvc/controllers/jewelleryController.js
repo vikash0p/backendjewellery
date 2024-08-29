@@ -55,6 +55,20 @@ export const getAllJewellery = async (req, res) => {
     }
 };
 
+export const getAllJewelleryData = async (req, res) => {
+    try {
+        // Fetch all items without pagination
+        const jewelleryList = await Jewellery.find();
+
+        res.json({
+            jewelleryList,
+            totalItems: jewelleryList.length,
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // Update a jewellery item by ID
 export const updateJewelleryById = async (req, res) => {
     try {
